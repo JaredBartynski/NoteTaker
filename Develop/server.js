@@ -20,7 +20,7 @@ app.get("/notes", function (req, res) {
 });
 
 app.get("/api/notes", function (req, res) {
-  return res.json(fs.readFileSync("db/db.json"));
+  return res.json(JSON.parse(fs.readFileSync("db/db.json")));
 });
 
 app.post("/api/notes", function (req, res) {
@@ -29,7 +29,11 @@ app.post("/api/notes", function (req, res) {
 
   const max = Math.max(...posts.map((post) => post.id));
 
-  newPost.id = max + 1;
+  if (max > 0) {
+    newPost.id = max + 1;
+  } else {
+    newPost.id = 1;
+  }
 
   posts.push(newPost);
 
@@ -39,9 +43,16 @@ app.post("/api/notes", function (req, res) {
 });
 
 //delete /api/notes/:id
-app.delete("/api/notes.id", function (req, res) {
-  deleteNoteFromJSON(req.params.id);
-  res.json(newPost);
+app.delete("/api/notes/:id", function (req, res) {
+  let idDelete = parseInt(req.params.id);
+
+  let posts = JSON.parse(fs.readFileSync("db/db.json"));
+
+  posts = posts.filter((post) => post.id !== idDelete);
+
+  fs.writeFileSync("db/db.json", JSON.stringify(posts));
+
+  res.json({});
 });
 
 app.get("*", function (req, res) {
