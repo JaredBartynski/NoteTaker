@@ -18,3 +18,22 @@ app.use(express.static("public"));
 app.get("/notes", function (req, res) {
   res.sendFile(path.join(__dirname, "public/notes.html"));
 });
+
+app.get("/api/notes", function (req, res) {
+  return res.json(fs.readFileSync("db/db.json"));
+});
+
+app.post("/api/notes", function (req, res) {
+  let newPost = req.body;
+  let posts = JSON.parse(fs.readFileSync("db/db.json"));
+
+  const max = Math.max(...posts.map((post) => post.id));
+
+  newPost.id = max + 1;
+
+  posts.push(newPost);
+
+  fs.writeFileSync("db/db.json", JSON.stringify(posts));
+
+  res.json(newPost);
+});
