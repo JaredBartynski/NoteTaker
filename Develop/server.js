@@ -37,3 +37,17 @@ app.post("/api/notes", function (req, res) {
 
   res.json(newPost);
 });
+
+//delete /api/notes/:id
+app.delete("/api/notes.id", function (req, res) {
+  deleteNoteFromJSON(req.params.id);
+  res.json(newPost);
+});
+
+app.get("*", function (req, res) {
+  res.sendFile(path.join(__dirname, "public/index.html"));
+});
+
+app.listen(PORT, () => {
+  console.log("Server is running on port:8080");
+});
